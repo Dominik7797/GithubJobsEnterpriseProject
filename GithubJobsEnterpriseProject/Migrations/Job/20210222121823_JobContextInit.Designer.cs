@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GithubJobsEnterpriseProject.Migrations
 {
     [DbContext(typeof(JobContext))]
-    [Migration("20210222105553_JobContextInitial")]
-    partial class JobContextInitial
+    [Migration("20210222121823_JobContextInit")]
+    partial class JobContextInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
