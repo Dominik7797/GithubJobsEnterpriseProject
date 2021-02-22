@@ -200,10 +200,10 @@ namespace GithubJobsEnterpriseProject.Controllers
 
         private void Login(string username, string password)
         {
-            var users = new JsonHandlerService().DeconvertUsersJson();
+            var users = _userContext.Users.ToList();
             var loginService = new LoginService(username, password, users);
-            if (loginService.Login()) { 
-
+            if (loginService.Login()) {
+                Console.WriteLine("Works");
             }
         }
 
