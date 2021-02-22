@@ -2,7 +2,7 @@
 
 namespace GithubJobsEnterpriseProject.Migrations
 {
-    public partial class JobContextInitial : Migration
+    public partial class JobContextInit : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -15,12 +15,14 @@ namespace GithubJobsEnterpriseProject.Controllers
     public class GithubJobsController : ControllerBase, IGitHubJobsController
     {
         private readonly JobContext _context;
+        private readonly UserContext _userContext;
         private readonly IJobApiService _apiService;
              
-        public GithubJobsController(JobContext context, IJobApiService apiService)
+        public GithubJobsController(JobContext context,UserContext userContext, IJobApiService apiService)
         {
 
             _context = context;
+            _userContext = userContext;
             _apiService = apiService;
         }
 
@@ -179,9 +181,8 @@ namespace GithubJobsEnterpriseProject.Controllers
         public void Save(string username, string email, string password)
         {
             var hashedPassword = new PasswordHandlerService(password).HashUserGivenPassword();
-            User user = new User(username, email, hashedPassword);
-            new JsonHandlerService().Save(user);
-
+            _userContext.Users.Add(new User(username, email, hashedPassword));
+            _userContext.SaveChanges();
         }
 
         [HttpPost("/login")]
