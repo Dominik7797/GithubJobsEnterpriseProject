@@ -30,9 +30,11 @@ namespace GithubJobsEnterpriseProject
             {
                 configuration.RootPath = "ClientApp/build";
             });
-            services.AddDbContext<JobContext>(opt =>
-                                              opt.UseInMemoryDatabase("JobsList"),
-                                              ServiceLifetime.Transient);
+
+            services.AddDbContext<JobContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DevConnection")));
+            services.AddDbContext<UserContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DevConnection")));
+
+
             services.AddTransient<IJobApiService, JobApiService>();
         }
 
