@@ -12,7 +12,7 @@ namespace GithubJobsEnterpriseProject.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class GithubJobsController : ControllerBase, IGitHubJobsController
+    public class GithubJobsController : ControllerBase
     {
         private readonly JobContext _context;
         private readonly UserContext _userContext;
@@ -26,16 +26,8 @@ namespace GithubJobsEnterpriseProject.Controllers
             _apiService = apiService;
         }
 
-        // GET: api/GithubJobs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GithubJob>>> GetJobItems()
-        {
-
-            GetJobs();
-            return await _context.JobItems.ToListAsync();
-        }
-
-        public void GetJobs()
+        public async Task<List<GithubJob>> GetJobsAsync()
         {
             var items = _context.JobItems;
             if (items != null)
@@ -50,9 +42,10 @@ namespace GithubJobsEnterpriseProject.Controllers
                 
                 _context.SaveChanges();
             }
+
+            return await _context.JobItems.ToListAsync();
         }
 
-        // GET: api/GithubJobs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<GithubJob>> GetGithubJob(string id)
         {
@@ -86,10 +79,6 @@ namespace GithubJobsEnterpriseProject.Controllers
         }
 
 
-
-
-        // PUT: api/GithubJobs/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGithubJob(string id, GithubJob githubJob)
         {
@@ -119,8 +108,6 @@ namespace GithubJobsEnterpriseProject.Controllers
             return NoContent();
         }
 
-        // POST: api/GithubJobs
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<GithubJob>> PostGithubJob(GithubJob githubJob)
         {
@@ -144,7 +131,6 @@ namespace GithubJobsEnterpriseProject.Controllers
             return CreatedAtAction("GetGithubJob", new { id = githubJob.Id }, githubJob);
         }
 
-        // DELETE: api/GithubJobs/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGithubJob(string id)
         {
@@ -165,16 +151,18 @@ namespace GithubJobsEnterpriseProject.Controllers
             return _context.JobItems.Any(e => e.Id == id);
         }
 
-        [HttpPost("/registration")]
-        public ActionResult GetCredentials()
+        [HttpGet("/username={username}&email={email}&password={password}")]
+        public bool GetVerify(string username, string email, string password)
         {
-            var username = Request.Form["Username"];
-            var email = Request.Form["Email"];
-            var password = Request.Form["Password"];
-
-            Save(username, email, password);
-
-            return Redirect("/");
+            foreach(var user in _userContext.Users)
+            {
+                if(user.Email == email || user.Username == username)
+                {
+                    return false;
+                }
+            }
+            Save(username,email,password);
+            return true;
 
         }
 
@@ -200,10 +188,10 @@ namespace GithubJobsEnterpriseProject.Controllers
 
         private void Login(string username, string password)
         {
-            var users = new JsonHandlerService().DeconvertUsersJson();
+            var users = _userContext.Users.ToList();
             var loginService = new LoginService(username, password, users);
-            if (loginService.Login()) { 
-
+            if (loginService.Login()) {
+                Console.WriteLine("Works");
             }
         }
 
