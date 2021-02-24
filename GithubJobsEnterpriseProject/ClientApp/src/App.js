@@ -93,9 +93,6 @@ function App() {
               <Link to="/statistics" style={{color:'black'}}>Statistics</Link>
               <img src={githubLogo} className="Git-logo" alt="logo" />
             </li>
-            <li style={NavElementStyle}>
-                <p>User:{cookie}</p>
-            </li>
           </ul>
         </nav>
 

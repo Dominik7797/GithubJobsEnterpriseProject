@@ -1,5 +1,7 @@
 ﻿using GithubJobsEnterpriseProject.Models;
 using GithubJobsEnterpriseProject.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace GithubJobsEnterpriseProject.Controllers
@@ -177,13 +180,24 @@ namespace GithubJobsEnterpriseProject.Controllers
         }
 
         [HttpGet("/login/username={username}&password={password}")]
-        public bool Login(string username, string password)
+        public async Task<bool> LoginAsync(string username, string password)
         {
             var users = _userContext.Users.ToList();
             var loginService = new LoginService(username, password, users);
             
             if (loginService.Login())
             {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name,username)
+                };
+                var identity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme
+                    );
+                var principal = new ClaimsPrincipal(identity);
+                var props = new AuthenticationProperties();
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,principal, props);
+
                 return true;
             }else
             {

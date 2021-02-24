@@ -28,7 +28,7 @@ namespace GithubJobsEnterpriseProject
             services.AddMvc();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt =>
             {
-                opt.LoginPath = "/Login";
+                opt.LoginPath = "/login/username={username}&password={password}";
                 opt.Cookie.Name = "AuthCookie";
             });
 
@@ -62,7 +62,9 @@ namespace GithubJobsEnterpriseProject
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+
             app.UseAuthentication();
+            app.UseCookiePolicy();
 
             app.UseRouting();
 
