@@ -172,6 +172,13 @@ namespace GithubJobsEnterpriseProject.Controllers
 
         }
 
+        [HttpGet("/getCookieData")]
+        public string GetCookieData()
+        {
+            var user = HttpContext.User;
+            return user.Identity.Name;
+        }
+
         public void Save(string username, string email, string password)
         {
             var hashedPassword = _hashService.Hash(password);
@@ -187,22 +194,26 @@ namespace GithubJobsEnterpriseProject.Controllers
             
             if (loginService.Login())
             {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name,username)
-                };
-                var identity = new ClaimsIdentity(
-                    claims, CookieAuthenticationDefaults.AuthenticationScheme
-                    );
-                var principal = new ClaimsPrincipal(identity);
-                var props = new AuthenticationProperties();
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,principal, props);
-
+                CreateCookie(username);
                 return true;
             }else
             {
                 return false;
             }
+        }
+
+        private async void CreateCookie(string username)
+        {
+            var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name,username)
+                };
+            var identity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme
+                );
+            var principal = new ClaimsPrincipal(identity);
+            var props = new AuthenticationProperties();
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, props);
         }
 
     }

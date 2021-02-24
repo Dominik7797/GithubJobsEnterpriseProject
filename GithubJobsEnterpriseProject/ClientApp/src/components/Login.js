@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import {
+    Redirect
+} from "react-router-dom";
 
 export default function Login() {
     const [username, setUsername] = useState([]);
@@ -15,6 +18,10 @@ export default function Login() {
             setPassword(e.target.value);
         }
 
+    };
+
+    const redirectToMain = () => {
+        return (<Redirect to={"/"} />);
     };
 
     const handleSubmit = (event) => {
@@ -39,7 +46,7 @@ export default function Login() {
                     </div>
                 </div>
                 {isCredentailsValid === true &&
-                    <p style={{ color: "green" }}>Success!</p>
+                    redirectToMain
                 }
                 {isCredentailsValid === false &&
                     <p style={{ color: "red" }}>Email or username is invalid!</p>

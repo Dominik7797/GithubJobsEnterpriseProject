@@ -21,7 +21,9 @@ import {
 
 function App() {
 
-   const [jobs, setJobs] = useState([]);
+    const [jobs, setJobs] = useState([]);
+    const [username, setUsername] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState([]);
 
   let markedJobs = [];
 
@@ -43,6 +45,7 @@ function App() {
 
     useEffect(() => {
         getJobs();
+        getUser();
     }, []);
 
 
@@ -50,13 +53,22 @@ function App() {
         axios.get('/api').then(data => setJobs(data.data))
     }
 
+    const getUser = () => {
+        axios.get('/getCookieData').then(data => setUsername(data.data));
+        if (username) {
+            setIsLoggedIn(true);
+        }
+    }
+
 
   return (
     <MarkedProvider>
     <div className="App">
-      
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+    <header className="App-header">
+                  <img src={logo} className="App-logo" alt="logo" />
+                  {isLoggedIn === true &&
+                      <p>Username: {username}</p>
+                  }  
     </header>
       
       <Router>
@@ -92,7 +104,7 @@ function App() {
               <img src={githubLogo} className="Git-logo" alt="logo" />
               <Link to="/statistics" style={{color:'black'}}>Statistics</Link>
               <img src={githubLogo} className="Git-logo" alt="logo" />
-            </li>
+            </li>             
           </ul>
         </nav>
 
