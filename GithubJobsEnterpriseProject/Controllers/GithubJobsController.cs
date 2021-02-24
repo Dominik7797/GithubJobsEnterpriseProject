@@ -177,10 +177,11 @@ namespace GithubJobsEnterpriseProject.Controllers
         }
 
         [HttpGet("/login/username={username}&password={password}")]
-        public bool GetLoginCredentials(string username, string password)
+        public bool Login(string username, string password)
         {
             var users = _userContext.Users.ToList();
             var loginService = new LoginService(username, password, users);
+            
             if (loginService.Login())
             {
                 return true;

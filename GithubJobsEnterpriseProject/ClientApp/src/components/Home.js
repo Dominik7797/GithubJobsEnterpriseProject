@@ -3,7 +3,6 @@ import Job from './Job';
 
 export default function Home(props) {
 
-
     const handleSubmit = (job) => {
         props.onChange(job)
     }
@@ -11,7 +10,9 @@ export default function Home(props) {
 
     function showElements(job) {
         
-        return (<Job job={job} onChange={handleSubmit}/>)
+        return (
+                <Job job={job} onChange={handleSubmit} />
+        )
     }
 
     return props.jobs.map(showElements)

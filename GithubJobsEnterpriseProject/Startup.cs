@@ -1,5 +1,6 @@
 using GithubJobsEnterpriseProject.Controllers;
 using GithubJobsEnterpriseProject.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -24,6 +25,12 @@ namespace GithubJobsEnterpriseProject
         {
 
             services.AddControllersWithViews();
+            services.AddMvc();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt =>
+            {
+                opt.LoginPath = "/Login";
+                opt.Cookie.Name = "AuthCookie";
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -55,6 +62,7 @@ namespace GithubJobsEnterpriseProject
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+            app.UseAuthentication();
 
             app.UseRouting();
 
