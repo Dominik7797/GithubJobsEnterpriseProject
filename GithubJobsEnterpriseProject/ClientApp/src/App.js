@@ -21,6 +21,10 @@ import {
 
 function App() {
 
+    const [jobs, setJobs] = useState([]);
+    const [username, setUsername] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState([false]);
+
   let markedJobs = [];
 
   function handleChange(markedJob) {
@@ -38,23 +42,39 @@ function App() {
     backgroundColor: "#78c3ff",
     width: "200px",
     }
+    const NavElementStyleLogin = {
+        fontSize: 15,
+        display: "inline-block",
+        right: "100%",
+        margin: "5px",
+        padding: "3px",
+        borderRadius: "15px",
+        textDecoration: 'none',
+        backgroundColor: "#78c3ff",
+        width: "100px",
+    }
 
     useEffect(() => {
         getJobs();
+        getUser();
     }, []);
 
-    const [jobs, setJobs] = useState([]);
 
     const getJobs = () => {
         axios.get('/api').then(data => setJobs(data.data))
     }
 
-  return (
+    const getUser = () => {
+        axios.get('/getCookieData').then(data => setUsername(data.data));
+        if (username) {
+            setIsLoggedIn(true);
+        }
+    }
+    return (
     <MarkedProvider>
     <div className="App">
-      
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+    <header className="App-header">
+                  <img src={logo} className="App-logo" alt="logo" /> 
     </header>
       
       <Router>
@@ -91,6 +111,19 @@ function App() {
               <Link to="/statistics" style={{color:'black'}}>Statistics</Link>
               <img src={githubLogo} className="Git-logo" alt="logo" />
             </li>
+                              {isLoggedIn === true &&
+                                  <li style={NavElementStyleLogin}>
+                                    <p>User:{username}</p>
+                                  </li>
+                              }
+                              {isLoggedIn === true &&
+                                  <li>
+                                  <form action="/logout">
+                                      <button type="submit">Logout</button>
+                                  </form>
+                                  </li>
+                              }
+                                  
           </ul>
         </nav>
 

@@ -1,11 +1,16 @@
 ﻿using GithubJobsEnterpriseProject.Models;
 using GithubJobsEnterpriseProject.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace GithubJobsEnterpriseProject.Controllers
@@ -15,6 +20,7 @@ namespace GithubJobsEnterpriseProject.Controllers
     public class GithubJobsController : ControllerBase
     {
         private readonly JobContext _context;
+        private HashService _hashService = new HashService();
         private readonly UserContext _userContext;
         private readonly IJobApiService _apiService;
              
@@ -30,17 +36,16 @@ namespace GithubJobsEnterpriseProject.Controllers
         public async Task<List<GithubJob>> GetJobsAsync()
         {
             var items = _context.JobItems;
-            if (items != null)
-            {
-                _context.RemoveRange(_context.JobItems);
-            }
             IEnumerable<GithubJob> GithubJobs = _apiService.GetGithubJobsFromUrl();
 
             foreach (GithubJob job in GithubJobs)
             {
-                _context.JobItems.AddRange(job);
-                
-                _context.SaveChanges();
+                if (!items.Contains(job))
+                {
+                    _context.JobItems.AddRange(job);
+
+                    _context.SaveChanges();
+                }
             }
 
             return await _context.JobItems.ToListAsync();
@@ -154,9 +159,9 @@ namespace GithubJobsEnterpriseProject.Controllers
         [HttpGet("/username={username}&email={email}&password={password}")]
         public bool GetVerify(string username, string email, string password)
         {
-            foreach(var user in _userContext.Users)
+            foreach (var user in _userContext.Users)
             {
-                if(user.Email == email || user.Username == username)
+                if (user.Email == email || user.Username == username)
                 {
                     return false;
                 }
@@ -166,33 +171,55 @@ namespace GithubJobsEnterpriseProject.Controllers
 
         }
 
+        [HttpGet("/getCookieData")]
+        public string GetCookieData()
+        {
+            var user = HttpContext.User;
+            return user.Identity.Name;
+        }
+
         public void Save(string username, string email, string password)
         {
-            var hashedPassword = new PasswordHandlerService(password).HashUserGivenPassword();
+            var hashedPassword = _hashService.Hash(password);
             _userContext.Users.Add(new User(username, email, hashedPassword));
             _userContext.SaveChanges();
         }
 
-        [HttpPost("/login")]
-        public ActionResult GetLoginCredentials()
-        {
-
-            var username = Request.Form["Username"];
-            var password = Request.Form["Password"];
-
-            Login(username, password);
-
-            return NoContent();
-
-        }
-
-        private void Login(string username, string password)
+        [HttpGet("/login/username={username}&password={password}")]
+        public bool Login(string username, string password)
         {
             var users = _userContext.Users.ToList();
             var loginService = new LoginService(username, password, users);
-            if (loginService.Login()) {
-                Console.WriteLine("Works");
+            
+            if (loginService.Login())
+            {
+                CreateCookie(username);
+                return true;
+            }else
+            {
+                return false;
             }
+        }
+
+        [HttpGet("/logout")]
+        public RedirectResult Logout(string username, string password)
+        {
+            HttpContext.SignOutAsync();
+            return Redirect("/");
+        }
+
+        private async void CreateCookie(string username)
+        {
+            var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name,username)
+                };
+            var identity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme
+                );
+            var principal = new ClaimsPrincipal(identity);
+            var props = new AuthenticationProperties();
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, props);
         }
 
     }

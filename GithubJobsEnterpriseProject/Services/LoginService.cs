@@ -7,15 +7,19 @@ namespace GithubJobsEnterpriseProject.Services
 {
     public class LoginService
     {
+
+        private const int _SALTSIZE = 16;
+
+        private const int _HASHSIZE = 20;
         private string _username { get; set; }
         private string _password { get; set; }
         private List<User> _userList { get; set; }
 
         public LoginService(string username, string password,List<User> users)
         {
-            this._password = password;
-            this._username = username;
-            this._userList = users;
+            _password = password;
+            _username = username;
+            _userList = users;
         }
 
         public bool Login()
@@ -30,27 +34,30 @@ namespace GithubJobsEnterpriseProject.Services
                 }
             }
 
-            byte[] hashBytes = Convert.FromBase64String(savedPasswordHash);
+            var splittedHashString = savedPasswordHash.Replace("$MYHASH$V1$", "").Split('$');
+            var iterations = int.Parse(splittedHashString[0]);
+            var base64Hash = splittedHashString[1];
 
-            byte[] salt = new byte[16];
-            Array.Copy(hashBytes, 0, salt, 0, 16);
+            // Get hash bytes
+            var hashBytes = Convert.FromBase64String(base64Hash);
 
-            var pbkdf2 = new Rfc2898DeriveBytes(_password, salt, 100000);
-            byte[] hash = pbkdf2.GetBytes(20);
+            // Get salt
+            var salt = new byte[_SALTSIZE];
+            Array.Copy(hashBytes, 0, salt, 0, _SALTSIZE);
 
-            for (int i = 0; i < 20; i++)
+            // Create hash with given salt
+            var pbkdf2 = new Rfc2898DeriveBytes(_password, salt, iterations);
+            byte[] hash = pbkdf2.GetBytes(_HASHSIZE);
+
+            // Get result
+            for (var i = 0; i < _HASHSIZE; i++)
             {
-                if (hashBytes[i + 16] != hash[i])
+                if (hashBytes[i + _SALTSIZE] != hash[i])
                 {
                     return false;
                 }
-                else
-                {
-                    return true;
-                }
             }
-            return false;
-
+            return true;
         }
     }
 }
