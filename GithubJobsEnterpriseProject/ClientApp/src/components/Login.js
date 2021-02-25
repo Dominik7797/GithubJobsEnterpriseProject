@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import {
-    Redirect
-} from "react-router-dom";
 
 export default function Login() {
     const [username, setUsername] = useState([]);
@@ -42,7 +39,7 @@ export default function Login() {
                     </div>
                 </div>
                 {isCredentailsValid === true &&
-                    window.location.reload(true)
+                    <p style={{ color: "green" }}>Success!</p> &&
                 }
                 {isCredentailsValid === false &&
                     <p style={{ color: "red" }}>Email or username is invalid!</p>

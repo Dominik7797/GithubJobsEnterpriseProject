@@ -156,7 +156,7 @@ namespace GithubJobsEnterpriseProject.Controllers
             return _context.JobItems.Any(e => e.Id == id);
         }
 
-        [HttpGet("/username={username}&email={email}&password={password}")]
+        [HttpGet("/register/username={username}&email={email}&password={password}")]
         public bool GetVerify(string username, string email, string password)
         {
             foreach (var user in _userContext.Users)

@@ -41,7 +41,7 @@ export default function Register() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        axios.get("/username=" + username + "&email=" + email + "&password=" + password).then(data => { setIsCredentailsValid(data.data) });
+        axios.get("/register/username=" + username + "&email=" + email + "&password=" + password).then(data => { setIsCredentailsValid(data.data) });
     }
 
     return (
@@ -77,6 +77,7 @@ export default function Register() {
             </div>
             {isCredentailsValid === true &&
                 <p style={{ color: "green" }}>Success!</p>
+
             }
             {isCredentailsValid === false &&
                 <p style={{ color: "red" }}>Email or username is taken!</p>

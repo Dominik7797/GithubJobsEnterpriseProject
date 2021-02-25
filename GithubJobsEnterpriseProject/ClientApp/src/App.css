@@ -38,4 +38,16 @@ ul {
     font-weight: bold;
     line-height: 25px;
 }
+.buttonLogout {
+    --btn-color: #275efe;
+    position: relative;
+    font-weight: 500;
+    font-size: 18px;
+    color: black;
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
 

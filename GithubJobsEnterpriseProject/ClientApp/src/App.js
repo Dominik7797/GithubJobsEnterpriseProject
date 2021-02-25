@@ -40,18 +40,8 @@ function App() {
     borderRadius: "15px",
     textDecoration: 'none',
     backgroundColor: "#78c3ff",
-    width: "200px",
-    }
-    const NavElementStyleLogin = {
-        fontSize: 15,
-        display: "inline-block",
-        right: "100%",
-        margin: "5px",
-        padding: "3px",
-        borderRadius: "15px",
-        textDecoration: 'none',
-        backgroundColor: "#78c3ff",
-        width: "100px",
+    width: "180px",
+    hight: "40px"
     }
 
     useEffect(() => {
@@ -78,7 +68,7 @@ function App() {
     </header>
       
       <Router>
-      <div>
+      <div className="cardsDiv">
             <nav>
             <ul>
             <li  style={NavElementStyle}>
@@ -112,14 +102,14 @@ function App() {
               <img src={githubLogo} className="Git-logo" alt="logo" />
             </li>
                               {isLoggedIn === true &&
-                                  <li style={NavElementStyleLogin}>
-                                    <p>User:{username}</p>
+                                    <li style={NavElementStyle}>
+                                    <Link to="/user" style={{ color: 'black' }}>User:{username}</Link>
                                   </li>
                               }
                               {isLoggedIn === true &&
-                                  <li>
+                                    <li style={NavElementStyle}>
                                   <form action="/logout">
-                                      <button type="submit">Logout</button>
+                                      <button type="submit" className="buttonLogout">Logout</button>
                                   </form>
                                   </li>
                               }

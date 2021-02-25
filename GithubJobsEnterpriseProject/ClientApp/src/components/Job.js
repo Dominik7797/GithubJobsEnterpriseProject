@@ -37,8 +37,8 @@ export default function Job(props) {
     }
 
     const cardStyling = {
-        width: "400px",
-        minHeight: "250px",
+        width: "350px",
+        height: "215px",
         display: "inline-block",
         borderStyle: "solid",
         borderRadius: "30px",
