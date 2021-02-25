@@ -23,7 +23,7 @@ function App() {
 
     const [jobs, setJobs] = useState([]);
     const [username, setUsername] = useState([]);
-    const [isLoggedIn, setIsLoggedIn] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState([false]);
 
   let markedJobs = [];
 
@@ -42,6 +42,17 @@ function App() {
     backgroundColor: "#78c3ff",
     width: "200px",
     }
+    const NavElementStyleLogin = {
+        fontSize: 15,
+        display: "inline-block",
+        right: "100%",
+        margin: "5px",
+        padding: "3px",
+        borderRadius: "15px",
+        textDecoration: 'none',
+        backgroundColor: "#78c3ff",
+        width: "100px",
+    }
 
     useEffect(() => {
         getJobs();
@@ -59,16 +70,11 @@ function App() {
             setIsLoggedIn(true);
         }
     }
-
-
-  return (
+    return (
     <MarkedProvider>
     <div className="App">
     <header className="App-header">
-                  <img src={logo} className="App-logo" alt="logo" />
-                  {isLoggedIn === true &&
-                      <p>Username: {username}</p>
-                  }  
+                  <img src={logo} className="App-logo" alt="logo" /> 
     </header>
       
       <Router>
@@ -104,7 +110,20 @@ function App() {
               <img src={githubLogo} className="Git-logo" alt="logo" />
               <Link to="/statistics" style={{color:'black'}}>Statistics</Link>
               <img src={githubLogo} className="Git-logo" alt="logo" />
-            </li>             
+            </li>
+                              {isLoggedIn === true &&
+                                  <li style={NavElementStyleLogin}>
+                                    <p>User:{username}</p>
+                                  </li>
+                              }
+                              {isLoggedIn === true &&
+                                  <li>
+                                  <form action="/logout">
+                                      <button type="submit">Logout</button>
+                                  </form>
+                                  </li>
+                              }
+                                  
           </ul>
         </nav>
 

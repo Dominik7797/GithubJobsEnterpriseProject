@@ -20,10 +20,6 @@ export default function Login() {
 
     };
 
-    const redirectToMain = () => {
-        return (<Redirect to={"/"} />);
-    };
-
     const handleSubmit = (event) => {
         event.preventDefault();
         axios.get("/login/username=" + username + "&password=" + password).then(data => setIsCredentailsValid(data.data))
@@ -46,7 +42,7 @@ export default function Login() {
                     </div>
                 </div>
                 {isCredentailsValid === true &&
-                    redirectToMain
+                    window.location.reload(true)
                 }
                 {isCredentailsValid === false &&
                     <p style={{ color: "red" }}>Email or username is invalid!</p>

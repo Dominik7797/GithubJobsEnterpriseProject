@@ -36,17 +36,16 @@ namespace GithubJobsEnterpriseProject.Controllers
         public async Task<List<GithubJob>> GetJobsAsync()
         {
             var items = _context.JobItems;
-            if (items != null)
-            {
-                _context.RemoveRange(_context.JobItems);
-            }
             IEnumerable<GithubJob> GithubJobs = _apiService.GetGithubJobsFromUrl();
 
             foreach (GithubJob job in GithubJobs)
             {
-                _context.JobItems.AddRange(job);
-                
-                _context.SaveChanges();
+                if (!items.Contains(job))
+                {
+                    _context.JobItems.AddRange(job);
+
+                    _context.SaveChanges();
+                }
             }
 
             return await _context.JobItems.ToListAsync();
@@ -187,7 +186,7 @@ namespace GithubJobsEnterpriseProject.Controllers
         }
 
         [HttpGet("/login/username={username}&password={password}")]
-        public async Task<bool> LoginAsync(string username, string password)
+        public bool Login(string username, string password)
         {
             var users = _userContext.Users.ToList();
             var loginService = new LoginService(username, password, users);
@@ -200,6 +199,13 @@ namespace GithubJobsEnterpriseProject.Controllers
             {
                 return false;
             }
+        }
+
+        [HttpGet("/logout")]
+        public RedirectResult Logout(string username, string password)
+        {
+            HttpContext.SignOutAsync();
+            return Redirect("/");
         }
 
         private async void CreateCookie(string username)
