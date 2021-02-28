@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import { Pie } from "react-chartjs-2";
 import { MDBContainer } from "mdbreact";
-import './Statistics.css';
+import '../../Stylesheets/Statistics.css';
 
 export default function Statistics() {
     const [pythonJobs, setPythonJobs] = useState([]);

@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {MarkedProvider} from './MarkedContext';
-import logo from './logo.png';
-import githubLogo from './github-logo.png';
-import './App.css';
+import logo from './Images/logo.png';
+import githubLogo from './Images/github-logo.png';
+import './Stylesheets/App.css';
 import Home from './components/Home';
-import Marked from './components/Marked';
-import Statistics from './components/Statistics';
-import SearchResults from './components/SearchResults'
-import Detail from './components/Detail'
-import Register from './components/Register'
-import Login from './components/Login'
+import Marked from './components/JobComponents/Marked';
+import Statistics from './components/JobComponents/JobStatistics';
+import SearchResults from './components/JobComponents/SearchResults'
+import Detail from './components/JobComponents/JobDetail'
+import Register from './components/AuthComponents/Register'
+import Login from './components/AuthComponents/Login'
 
 import {
   BrowserRouter as Router,

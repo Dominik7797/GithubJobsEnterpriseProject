@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import Job from './Job';
-import {MarkedContext} from '../MarkedContext';
+import {MarkedContext} from '../../MarkedContext';
 
 export default function Marked() {
     

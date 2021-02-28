@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { MarkedContext } from '../MarkedContext';
-import EmptyHeart from '../empty-heart.png';
-import FullHeart from '../full-heart.png';
-import './Job.css';
+import { MarkedContext } from '../../MarkedContext';
+import EmptyHeart from '../../Images/empty-heart.png';
+import FullHeart from '../../Images/full-heart.png';
+import '../../Stylesheets/Job.css';
 
 export default function Job(props) {
     const [markedJobs, setMarkedJob] = useContext(MarkedContext);
