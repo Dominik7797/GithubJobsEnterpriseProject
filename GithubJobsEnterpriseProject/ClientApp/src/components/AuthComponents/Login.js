@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 
 export default function Login() {
@@ -7,11 +7,11 @@ export default function Login() {
     const [isCredentailsValid, setIsCredentailsValid] = useState(null);
 
     const handleChange = (e) => {
-        if (e.target.name == "Username") {
+        if (e.target.name === "Username") {
             setUsername(e.target.value);
         }
         
-        else if (e.target.name == "Password") {
+        else if (e.target.name === "Password") {
             setPassword(e.target.value);
         }
 
@@ -24,22 +24,22 @@ export default function Login() {
 
     return (
             <form method="POST" action="/login" onSubmit={handleSubmit} style={{ padding: '5%', border: '1px solid #ced4da', marginBottom: '2%'}}>
-                <div class="container login-form">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input type="text" class="form-control" onChange={handleChange} name='Username' placeholder="Your Username *"/>
+                <div className="container login-form">
+                    <div className="row">
+                        <div className="col-md-6">
+                            <div className="form-group">
+                                <input type="text" className="form-control" onChange={handleChange} name='Username' placeholder="Your Username *"/>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input type="password" class="form-control" onChange={handleChange} name='Password' placeholder="Your Password *"/>
+                        <div className="col-md-6">
+                            <div className="form-group">
+                                <input type="password" className="form-control" onChange={handleChange} name='Password' placeholder="Your Password *"/>
                             </div>
                         </div>
                     </div>
                 </div>
                 {isCredentailsValid === true &&
-                    <p style={{ color: "green" }}>Success!</p> &&
+                    <p style={{ color: "green" }}>Success!</p>
                 }
                 {isCredentailsValid === false &&
                     <p style={{ color: "red" }}>Email or username is invalid!</p>

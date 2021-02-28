@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import axios from 'axios';
-import DetailDesc from './DetailsDescriptionConverter'
+import DetailDesc from './JobDetailsDescriptionConverter'
 
 export default function Detail() {
     const url = new URL(window.location.href);

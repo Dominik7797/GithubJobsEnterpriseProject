@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import Job from './Job';
+import React from 'react'
+import Job from './JobComponents/Job';
 
 export default function Home(props) {
 
