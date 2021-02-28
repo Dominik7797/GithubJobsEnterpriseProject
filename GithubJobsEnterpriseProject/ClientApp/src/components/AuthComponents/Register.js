@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import Login from './Login';
 
 export default function Register() {
 
@@ -12,62 +11,76 @@ export default function Register() {
     const [isValidEmail, setIsValidEmail] = useState(false);
     const [isCredentailsValid, setIsCredentailsValid] = useState(null);
 
-    const handleChange = (e) => {
-        if (e.target.name == "Username") {
-            if (e.target.value !== null && e.target.value.length < 6) {
-                setUsername(e.target.value);
+    const validateInputFiledLength = (value, minValue) => {
+        if (value <= minValue) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    const handleUserInputChange = (e) => {
+        let currentField = e.target.name;
+        let inputValue = e.target.value;
+
+        let minimumUsernameLength = 6;
+        let minimumEmailLength = 12;
+
+        if (currentField == "Username") {
+            if (!validateInputFiledLength(inputValue.length, minimumUsernameLength)) {
+                setUsername(inputValue);
                 setIsValidUsername(false);
             } else {
-                setUsername(e.target.value);
+                setUsername(inputValue);
                 setIsValidUsername(true);
             }
         }
-        else if (e.target.name == "Email") {
-            if (e.target.value !== null && e.target.value.length < 12) {
-                setUsername(e.target.value);
+        else if (currentField == "Email") {
+            if (!validateInputFiledLength(inputValue.length, minimumEmailLength)) {
+                setUsername(inputValue);
                 setIsValidEmail(false);
             } else {
-                setEmail(e.target.value);
+                setEmail(inputValue);
                 setIsValidEmail(true);
             }
         }
-        else if (e.target.name == "Password") {
-            setPassword(e.target.value);
+        else if (currentField == "Password") {
+            setPassword(inputValue);
         } else {
-            setPasswordRe(e.target.value);
+            setPasswordRe(inputValue);
         }
 
     };
 
-    const handleSubmit = (event) => {
+    const formSubmit = (event) => {
         event.preventDefault();
         axios.get("/register/username=" + username + "&email=" + email + "&password=" + password).then(data => { setIsCredentailsValid(data.data) });
     }
 
     return (
-        <form onSubmit={handleSubmit} style={{ padding: '5%', border: '1px solid #ced4da', marginBottom: '2%'}}>
-                <div class="container register-form">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input type="text" class="form-control" onChange={handleChange} name='Username' placeholder="Your Username *" />
+        <form onSubmit={formSubmit} style={{ padding: '5%', border: '1px solid #ced4da', marginBottom: '2%'}}>
+                <div className="container register-form">
+                    <div className="row">
+                        <div className="col-md-6">
+                            <div className="form-group">
+                                <input type="text" className="form-control" onChange={handleUserInputChange} name='Username' placeholder="Your Username *" />
                                 {isValidUsername === false && username.length > 1 &&
                                     <p style={{color : "red"}}>Invalid Username!</p>
                                 }
                             </div>
-                            <div class="form-group">
-                                <input type="text" class="form-control" onChange={handleChange} name='Email' placeholder="Your Email *" />
+                            <div className="form-group">
+                                <input type="text" className="form-control" onChange={handleUserInputChange} name='Email' placeholder="Your Email *" />
                                 {isValidEmail === false && email.length > 1 &&
                                     <p style={{ color: "red" }}>Invalid Email!</p>
                                 }
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input type="password" class="form-control" onChange={handleChange} name='Password' placeholder="Your Password *"/>
+                        <div className="col-md-6">
+                            <div className="form-group">
+                                <input type="password" className="form-control" onChange={handleUserInputChange} name='Password' placeholder="Your Password *"/>
                             </div>
-                            <div class="form-group">
-                                <input type="password" class="form-control" onChange={handleChange} name='PasswordRe' placeholder="Confirm Password *"/>
+                            <div className="form-group">
+                                <input type="password" className="form-control" onChange={handleUserInputChange} name='PasswordRe' placeholder="Confirm Password *"/>
                             </div>
                             {password !== passwordRe && password.length > 1 && passwordRe.length > 1 &&
                                 <p style={{ color: "red" }}>Passwords does not match!</p>

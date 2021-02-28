@@ -17,16 +17,16 @@ export default function SearchResults() {
     return (
         <div>
              <form onSubmit={handleSubmit} style={{ padding: '5%', border: '1px solid #ced4da', marginBottom: '2%'}}>
-                <div class="container search-form">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input type="text" class="form-control" name='descSearch' placeholder="Python *"/>
+                <div className="container search-form">
+                    <div className="row">
+                        <div className="col-md-6">
+                            <div className="form-group">
+                                <input type="text" className="form-control" name='descSearch' placeholder="Python *"/>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input type="text" class="form-control" name='locSearch' placeholder="Berlin *"/>
+                        <div className="col-md-6">
+                            <div className="form-group">
+                                <input type="text" className="form-control" name='locSearch' placeholder="Berlin *"/>
                             </div>
                         </div>
                     </div>
