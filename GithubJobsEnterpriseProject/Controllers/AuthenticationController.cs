@@ -15,25 +15,28 @@ namespace GithubJobsEnterpriseProject.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly UserContext _context;
-        private HashService _hashService = new HashService();
+        private readonly IUserRepository _userRepository;
+        private IHashService _hashService;
+        private ILoginService _loginService;
 
-        public AuthenticationController(UserContext context)
+        public AuthenticationController(IUserRepository userRepository, ILoginService loginService, IHashService hashService)
         {
-            _context = context;
+            _userRepository = userRepository;
+            _hashService = hashService;
+            _loginService = loginService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public IEnumerable<User> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return _userRepository.GetAllUsers();
         }
 
 
-        [HttpGet("/register/username={username}&email={email}&password={password}")]
-        public bool GetVerify(string username, string email, string password)
+        [HttpGet("/verify/username={username}&email={email}&password={password}")]
+        public bool VerifyUser(string username, string email, string password)
         {
-            foreach (var user in _context.Users)
+            foreach (var user in _userRepository.GetAllUsers())
             {
                 if (user.Email == email || user.Username == username)
                 {
@@ -55,17 +58,15 @@ namespace GithubJobsEnterpriseProject.Controllers
         public void Save(string username, string email, string password)
         {
             var hashedPassword = _hashService.Hash(password);
-            _context.Users.Add(new User(username, email, hashedPassword));
-            _context.SaveChanges();
+            _userRepository.Add(new User(username, email, hashedPassword));
         }
 
         [HttpGet("/login/username={username}&password={password}")]
         public bool Login(string username, string password)
         {
-            var users = _context.Users.ToList();
-            var loginService = new LoginService(username, password, users);
+            var users = _userRepository.GetAllUsers().ToList();
 
-            if (loginService.Login())
+            if (_loginService.Login(username,password,users))
             {
                 CreateCookie(username);
                 return true;

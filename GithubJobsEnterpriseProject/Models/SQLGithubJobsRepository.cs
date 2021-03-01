@@ -11,34 +11,49 @@ namespace GithubJobsEnterpriseProject.Models
 
         public SQLGithubJobsRepository(JobContext context)
         {
-            this.context = context;
+            this._context = context;
         }
 
         public GithubJob Add(GithubJob job)
         {
-            _context.JobItems.Add(job);
-            _context.SaveChanges();
+            if (!_context.JobItems.Contains(job))
+            {
+                _context.JobItems.Add(job);
+                _context.SaveChanges();
+            }
+
             return job;
         }
 
-        public GithubJob DeleteJob(int id)
+        public GithubJob DeleteJob(string id)
         {
-            throw new NotImplementedException();
+            var jobToDelete = _context.JobItems.Find(id);
+
+            if(jobToDelete != null)
+            {
+                _context.JobItems.Remove(jobToDelete);
+                _context.SaveChanges();
+            }
+
+            return jobToDelete;
         }
 
         public IEnumerable<GithubJob> GetAllJobs()
         {
-            throw new NotImplementedException();
+            return _context.JobItems;
         }
 
-        public GithubJob GetJob(int id)
+        public GithubJob GetJob(string id)
         {
-            throw new NotImplementedException();
+            return _context.JobItems.Find(id);
         }
 
         public GithubJob UpdateJob(GithubJob updatedJob)
         {
-            throw new NotImplementedException();
+            var jobToUpdate = _context.JobItems.Attach(updatedJob);
+            jobToUpdate.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            _context.SaveChanges();
+            return updatedJob;
         }
     }
 }

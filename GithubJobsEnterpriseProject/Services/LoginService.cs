@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 
 namespace GithubJobsEnterpriseProject.Services
 {
-    public class LoginService
+    public class LoginService : ILoginService
     {
 
         private const int _SALTSIZE = 16;
@@ -15,20 +15,13 @@ namespace GithubJobsEnterpriseProject.Services
         private string _password { get; set; }
         private List<User> _userList { get; set; }
 
-        public LoginService(string username, string password,List<User> users)
-        {
-            _password = password;
-            _username = username;
-            _userList = users;
-        }
-
-        public bool Login()
+        public bool Login(string username, string password, List<User> users)
         {
             string savedPasswordHash = "";
 
             foreach (var user in _userList)
             {
-                if(user.Username == _username)
+                if (user.Username == _username)
                 {
                     savedPasswordHash = user.Password;
                 }

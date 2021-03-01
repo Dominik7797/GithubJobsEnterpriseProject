@@ -7,10 +7,10 @@ namespace GithubJobsEnterpriseProject.Models
 {
     public interface IGithubJobsRepository
     {
-        GithubJob GetJob(int id);
+        GithubJob GetJob(string id);
         IEnumerable<GithubJob> GetAllJobs();
         GithubJob Add(GithubJob job);
         GithubJob UpdateJob(GithubJob updatedJob);
-        GithubJob DeleteJob(int id);
+        GithubJob DeleteJob(string id);
     }
 }

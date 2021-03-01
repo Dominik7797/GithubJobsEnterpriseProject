@@ -1,15 +1,9 @@
 ﻿using GithubJobsEnterpriseProject.Models;
-using GithubJobsEnterpriseProject.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace GithubJobsEnterpriseProject.Controllers
 {
@@ -17,138 +11,60 @@ namespace GithubJobsEnterpriseProject.Controllers
     [ApiController]
     public class GithubJobsController : ControllerBase
     {
-        private readonly JobContext _context;
+        private readonly IGithubJobsRepository _githubJobsRepository;
         private readonly IJobApiService _apiService;
 
-        public GithubJobsController(JobContext context, IJobApiService apiService)
+        public GithubJobsController(IGithubJobsRepository githubJobsRepository, IJobApiService apiService)
         {
-
-            _context = context;
+            _githubJobsRepository = githubJobsRepository;
             _apiService = apiService;
         }
 
         [HttpGet]
-        public async Task<List<GithubJob>> GetJobsAsync()
+        public List<GithubJob> GetJobs()
         {
-            var items = _context.JobItems;
+            var items = _githubJobsRepository.GetAllJobs();
             IEnumerable<GithubJob> GithubJobs = _apiService.GetGithubJobsFromUrl();
 
             foreach (GithubJob job in GithubJobs)
             {
                 if (!items.Contains(job))
                 {
-                    _context.JobItems.AddRange(job);
-
-                    _context.SaveChanges();
+                    _githubJobsRepository.Add(job);
                 }
             }
 
-            return await _context.JobItems.ToListAsync();
+            return _githubJobsRepository.GetAllJobs().ToList();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<GithubJob>> GetGithubJob(string id)
+        public GithubJob GetGithubJob(string id)
         {
-            var githubJob = await _context.JobItems.FindAsync(id);
-
-            if (githubJob == null)
-            {
-                return NotFound();
-            }
-
-            return githubJob;
+            return _githubJobsRepository.GetJob(id);
         }
 
-        [HttpGet("description={description}&location={location}")]
-        public async Task<ActionResult<IEnumerable<GithubJob>>> GetGithubJobByDescriptionAndPlace([FromRoute] string description,
-                                                                                                  [FromRoute] string location)
+        [HttpGet("/search/description={description}&location={location}")]
+        public void GetSearchResult(string description, string location)
         {
-            var items = _context.JobItems;
-            if (items != null)
-            {
-                _context.RemoveRange(_context.JobItems);
-            }
-            IEnumerable<GithubJob> GithubJobs = _apiService.GetGithubJobsByParameters(description, location);
-
-            foreach (GithubJob job in GithubJobs)
-            {
-                _context.JobItems.AddRange(job);
-                _context.SaveChanges();
-            }
-            return await _context.JobItems.ToListAsync();
-        }
+            var allJobs = _githubJobsRepository.GetAllJobs();
+            var searchedJobResults = new List<GithubJob>();
 
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGithubJob(string id, GithubJob githubJob)
-        {
-            if (id != githubJob.Id)
+            foreach (var job in allJobs)
             {
-                return BadRequest();
-            }
+                var jobLocation = job.Location.ToLowerInvariant();
 
-            _context.Entry(githubJob).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GithubJobExists(id))
+                if (job.Description.Contains(description) || jobLocation == location.ToLowerInvariant())
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    searchedJobResults.Add(job);
                 }
             }
-
-            return NoContent();
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<GithubJob>> PostGithubJob(GithubJob githubJob)
-        {
-            _context.JobItems.Add(githubJob);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (GithubJobExists(githubJob.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetGithubJob", new { id = githubJob.Id }, githubJob);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGithubJob(string id)
+        public GithubJob DeleteGithubJob(string id)
         {
-            var githubJob = await _context.JobItems.FindAsync(id);
-            if (githubJob == null)
-            {
-                return NotFound();
-            }
-
-            _context.JobItems.Remove(githubJob);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool GithubJobExists(string id)
-        {
-            return _context.JobItems.Any(e => e.Id == id);
+            return _githubJobsRepository.DeleteJob(id);
         }
     }
 }

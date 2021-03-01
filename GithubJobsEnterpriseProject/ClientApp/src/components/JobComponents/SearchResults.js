@@ -9,7 +9,7 @@ export default function SearchResults() {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        axios.get('api/description=' + event.target.descSearch.value
+        axios.get('/search/description=' + event.target.descSearch.value
             + '&location=' +event.target.locSearch.value).then(jobData =>
             getSearch(jobData.data)
         )

@@ -55,7 +55,7 @@ export default function Register() {
     const formSubmit = (event) => {
         event.preventDefault();
         console.log(username);
-        axios.get("/register/username=${username}&email=${email}&password=${password}").then(data => { setIsCredentailsValid(data.data) });
+        axios.get(`/verify/username=${username}&email=${email}&password=${password}`).then(data => { setIsCredentailsValid(data.data) });
     }
 
     return (
