@@ -1,7 +1,11 @@
+using GithubJobsEnterpriseProject.Controllers;
+using GithubJobsEnterpriseProject.Models;
+using GithubJobsEnterpriseProject.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,12 +26,28 @@ namespace GithubJobsEnterpriseProject
         {
 
             services.AddControllersWithViews();
+            services.AddMvc();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt =>
+            {
+                opt.LoginPath = "/login/username={username}&password={password}";
+                opt.Cookie.Name = "AuthCookie";
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddDbContext<JobContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DevConnection")));
+            services.AddDbContext<UserContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DevConnection")));
+
+
+            services.AddTransient<IJobApiService, JobApiService>();
+            services.AddScoped<IGithubJobsRepository, SQLGithubJobsRepository>();
+            services.AddScoped<IUserRepository, SQLUsersRepository>();
+            services.AddTransient<ILoginService, LoginService>();
+            services.AddSingleton<IHashService, HashService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +68,9 @@ namespace GithubJobsEnterpriseProject
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            app.UseAuthentication();
+            app.UseCookiePolicy();
+
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
@@ -56,6 +79,7 @@ namespace GithubJobsEnterpriseProject
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
             });
+
 
             app.UseSpa(spa =>
             {

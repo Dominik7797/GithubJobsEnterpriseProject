@@ -1,0 +1,10 @@
+﻿.jobCard:hover {
+    background: #b8dfff;
+    border-color: #0062cc;
+}
+
+.jobCard {
+    background: url("../Images/cardBack.jpg");
+    background-repeat: no-repeat;
+    background-size: 350px 215px;
+}
