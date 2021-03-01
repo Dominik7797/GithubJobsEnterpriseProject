@@ -20,7 +20,7 @@ namespace GithubJobsEnterpriseProject.Controllers
         private readonly JobContext _context;
         private readonly IJobApiService _apiService;
 
-        public GithubJobsController(JobContext context, UserContext userContext, IJobApiService apiService)
+        public GithubJobsController(JobContext context, IJobApiService apiService)
         {
 
             _context = context;
