@@ -1,5 +1,6 @@
 using GithubJobsEnterpriseProject.Controllers;
 using GithubJobsEnterpriseProject.Models;
+using GithubJobsEnterpriseProject.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -43,6 +44,10 @@ namespace GithubJobsEnterpriseProject
 
 
             services.AddTransient<IJobApiService, JobApiService>();
+            services.AddScoped<IGithubJobsRepository, SQLGithubJobsRepository>();
+            services.AddScoped<IUserRepository, SQLUsersRepository>();
+            services.AddTransient<ILoginService, LoginService>();
+            services.AddSingleton<IHashService, HashService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

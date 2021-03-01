@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import axios from 'axios';
 
 export default function Register() {
@@ -12,7 +12,7 @@ export default function Register() {
     const [isCredentailsValid, setIsCredentailsValid] = useState(null);
 
     const validateInputFiledLength = (value, minValue) => {
-        if (value <= minValue) {
+        if (value < minValue) {
             return false;
         }else{
             return true;
@@ -37,7 +37,7 @@ export default function Register() {
         }
         else if (currentField == "Email") {
             if (!validateInputFiledLength(inputValue.length, minimumEmailLength)) {
-                setUsername(inputValue);
+                setEmail(inputValue);
                 setIsValidEmail(false);
             } else {
                 setEmail(inputValue);
@@ -54,7 +54,8 @@ export default function Register() {
 
     const formSubmit = (event) => {
         event.preventDefault();
-        axios.get("/register/username=" + username + "&email=" + email + "&password=" + password).then(data => { setIsCredentailsValid(data.data) });
+        console.log(username);
+        axios.get(`/verify/username=${username}&email=${email}&password=${password}`).then(data => { setIsCredentailsValid(data.data) });
     }
 
     return (

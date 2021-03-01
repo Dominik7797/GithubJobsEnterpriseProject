@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 
 namespace GithubJobsEnterpriseProject.Services
 {
-    public class HashService
+    public class HashService : IHashService
     {
 
         private const int _SALTSIZE = 16;

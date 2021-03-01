@@ -1,228 +1,70 @@
 ﻿using GithubJobsEnterpriseProject.Models;
-using GithubJobsEnterpriseProject.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace GithubJobsEnterpriseProject.Controllers
 {
-    [Route("api")]
+    [Route("/api")]
     [ApiController]
     public class GithubJobsController : ControllerBase
     {
-        private readonly JobContext _context;
-        private HashService _hashService = new HashService();
-        private readonly UserContext _userContext;
+        private readonly IGithubJobsRepository _githubJobsRepository;
         private readonly IJobApiService _apiService;
-             
-        public GithubJobsController(JobContext context,UserContext userContext, IJobApiService apiService)
-        {
 
-            _context = context;
-            _userContext = userContext;
+        public GithubJobsController(IGithubJobsRepository githubJobsRepository, IJobApiService apiService)
+        {
+            _githubJobsRepository = githubJobsRepository;
             _apiService = apiService;
         }
 
         [HttpGet]
-        public async Task<List<GithubJob>> GetJobsAsync()
+        public List<GithubJob> GetJobs()
         {
-            var items = _context.JobItems;
+            var items = _githubJobsRepository.GetAllJobs();
             IEnumerable<GithubJob> GithubJobs = _apiService.GetGithubJobsFromUrl();
 
             foreach (GithubJob job in GithubJobs)
             {
                 if (!items.Contains(job))
                 {
-                    _context.JobItems.AddRange(job);
-
-                    _context.SaveChanges();
+                    _githubJobsRepository.Add(job);
                 }
             }
 
-            return await _context.JobItems.ToListAsync();
+            return _githubJobsRepository.GetAllJobs().ToList();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<GithubJob>> GetGithubJob(string id)
+        public GithubJob GetGithubJob(string id)
         {
-            var githubJob = await _context.JobItems.FindAsync(id);
-
-            if (githubJob == null)
-            {
-                return NotFound();
-            }
-
-            return githubJob;
+            return _githubJobsRepository.GetJob(id);
         }
 
-        [HttpGet("description={description}&location={location}")]
-        public async Task<ActionResult<IEnumerable<GithubJob>>> GetGithubJobByDescriptionAndPlace([FromRoute] string description,
-                                                                                                  [FromRoute] string location)
+        [HttpGet("/search/description={description}&location={location}")]
+        public void GetSearchResult(string description, string location)
         {
-            var items = _context.JobItems;
-            if (items != null)
-            {
-                _context.RemoveRange(_context.JobItems);
-            }
-            IEnumerable<GithubJob> GithubJobs = _apiService.GetGithubJobsByParameters(description, location);
-
-            foreach (GithubJob job in GithubJobs)
-            {
-                _context.JobItems.AddRange(job);
-                _context.SaveChanges();
-            }
-            return await _context.JobItems.ToListAsync();
-        }
+            var allJobs = _githubJobsRepository.GetAllJobs();
+            var searchedJobResults = new List<GithubJob>();
 
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGithubJob(string id, GithubJob githubJob)
-        {
-            if (id != githubJob.Id)
+            foreach (var job in allJobs)
             {
-                return BadRequest();
-            }
+                var jobLocation = job.Location.ToLowerInvariant();
 
-            _context.Entry(githubJob).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GithubJobExists(id))
+                if (job.Description.Contains(description) || jobLocation == location.ToLowerInvariant())
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    searchedJobResults.Add(job);
                 }
             }
-
-            return NoContent();
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<GithubJob>> PostGithubJob(GithubJob githubJob)
-        {
-            _context.JobItems.Add(githubJob);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (GithubJobExists(githubJob.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetGithubJob", new { id = githubJob.Id }, githubJob);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGithubJob(string id)
+        public GithubJob DeleteGithubJob(string id)
         {
-            var githubJob = await _context.JobItems.FindAsync(id);
-            if (githubJob == null)
-            {
-                return NotFound();
-            }
-
-            _context.JobItems.Remove(githubJob);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return _githubJobsRepository.DeleteJob(id);
         }
-
-        private bool GithubJobExists(string id)
-        {
-            return _context.JobItems.Any(e => e.Id == id);
-        }
-
-        [HttpGet("/register/username={username}&email={email}&password={password}")]
-        public bool GetVerify(string username, string email, string password)
-        {
-            foreach (var user in _userContext.Users)
-            {
-                if (user.Email == email || user.Username == username)
-                {
-                    return false;
-                }
-            }
-            Save(username,email,password);
-            return true;
-
-        }
-
-        [HttpGet("/getCookieData")]
-        public string GetCookieData()
-        {
-            var user = HttpContext.User;
-            return user.Identity.Name;
-        }
-
-        public void Save(string username, string email, string password)
-        {
-            var hashedPassword = _hashService.Hash(password);
-            _userContext.Users.Add(new User(username, email, hashedPassword));
-            _userContext.SaveChanges();
-        }
-
-        [HttpGet("/login/username={username}&password={password}")]
-        public bool Login(string username, string password)
-        {
-            var users = _userContext.Users.ToList();
-            var loginService = new LoginService(username, password, users);
-            
-            if (loginService.Login())
-            {
-                CreateCookie(username);
-                return true;
-            }else
-            {
-                return false;
-            }
-        }
-
-        [HttpGet("/logout")]
-        public RedirectResult Logout(string username, string password)
-        {
-            HttpContext.SignOutAsync();
-            return Redirect("/");
-        }
-
-        private async void CreateCookie(string username)
-        {
-            var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name,username)
-                };
-            var identity = new ClaimsIdentity(
-                claims, CookieAuthenticationDefaults.AuthenticationScheme
-                );
-            var principal = new ClaimsPrincipal(identity);
-            var props = new AuthenticationProperties();
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, props);
-        }
-
     }
-
-   
 }
