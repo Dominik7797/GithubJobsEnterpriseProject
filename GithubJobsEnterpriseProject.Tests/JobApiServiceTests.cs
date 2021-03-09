@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GithubJobsEnterpriseProject.Controllers;
 using Microsoft.Extensions.Configuration;
-using GithubJobsEnterpriseProject.Models;
 using NSubstitute;
 using NUnit.Framework;
-using GithubJobsEnterpriseProject.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
+using System;
 
 namespace GithubJobsEnterpriseProject.Tests
 {
@@ -46,7 +39,7 @@ namespace GithubJobsEnterpriseProject.Tests
             var config = Substitute.For<IConfiguration>();
             config.GetValue<string>("GithubJobs:Url").Returns("https://badtest.com/positions.json");
             JobApiService jobApiService = new JobApiService(config);
-            Assert.Throws<UriFormatException> (() => jobApiService.GetGithubJobsFromUrl());
+            Assert.Throws<UriFormatException>(() => jobApiService.GetGithubJobsFromUrl());
         }
 
         [Test]
