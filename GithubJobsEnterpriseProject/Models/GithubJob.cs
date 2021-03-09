@@ -9,6 +9,13 @@ namespace GithubJobsEnterpriseProject.Models
 {
     public class GithubJob
     {
+        public GithubJob(string id, string company, string title)
+        {
+            Id = id;
+            Company = company;
+            Title = title;
+        }
+
         [Key]
         public string Id { get; set; }
         [Required]
