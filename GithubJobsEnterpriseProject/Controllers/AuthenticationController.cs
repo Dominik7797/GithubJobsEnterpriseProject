@@ -26,13 +26,6 @@ namespace GithubJobsEnterpriseProject.Controllers
             _loginService = loginService;
         }
 
-        [HttpGet]
-        public IEnumerable<User> GetUsers()
-        {
-            return _userRepository.GetAllUsers();
-        }
-
-
         [HttpGet("/verify/username={username}&email={email}&password={password}")]
         public bool VerifyUser(string username, string email, string password)
         {
