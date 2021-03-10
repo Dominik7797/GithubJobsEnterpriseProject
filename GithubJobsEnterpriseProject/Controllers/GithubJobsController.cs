@@ -65,5 +65,11 @@ namespace GithubJobsEnterpriseProject.Controllers
         {
             return _githubJobsRepository.DeleteJob(id);
         }
+
+        [HttpGet("/statistics/keyword={technology}")]
+        public int GetJobByTechnology(string technology)
+        {
+            return _githubJobsRepository.GetJobByTechnology(technology);
+        }
     }
 }

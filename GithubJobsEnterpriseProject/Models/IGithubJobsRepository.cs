@@ -12,5 +12,6 @@ namespace GithubJobsEnterpriseProject.Models
         GithubJob Add(GithubJob job);
         GithubJob UpdateJob(GithubJob updatedJob);
         GithubJob DeleteJob(string id);
+        int GetJobByTechnology(string technology);
     }
 }
