@@ -48,6 +48,12 @@ namespace GithubJobsEnterpriseProject.Models
             return _context.JobItems.Find(id);
         }
 
+        public int GetJobByTechnology(string technology)
+        { 
+            var number = _context.JobItems.Where(x => x.Description.Contains(technology)).Count();
+            return number;
+        }
+
         public GithubJob UpdateJob(GithubJob updatedJob)
         {
             var jobToUpdate = _context.JobItems.Attach(updatedJob);
