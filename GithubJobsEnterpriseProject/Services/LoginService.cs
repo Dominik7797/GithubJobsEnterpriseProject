@@ -11,17 +11,14 @@ namespace GithubJobsEnterpriseProject.Services
         private const int _SALTSIZE = 16;
 
         private const int _HASHSIZE = 20;
-        private string _username { get; set; }
-        private string _password { get; set; }
-        private List<User> _userList { get; set; }
 
         public bool Login(string username, string password, List<User> users)
         {
             string savedPasswordHash = "";
 
-            foreach (var user in _userList)
+            foreach (var user in users)
             {
-                if (user.Username == _username)
+                if (user.Username == username)
                 {
                     savedPasswordHash = user.Password;
                 }
@@ -39,7 +36,7 @@ namespace GithubJobsEnterpriseProject.Services
             Array.Copy(hashBytes, 0, salt, 0, _SALTSIZE);
 
             // Create hash with given salt
-            var pbkdf2 = new Rfc2898DeriveBytes(_password, salt, iterations);
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations);
             byte[] hash = pbkdf2.GetBytes(_HASHSIZE);
 
             // Get result

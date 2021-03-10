@@ -39,7 +39,7 @@ export default function Login() {
                     </div>
                 </div>
                 {isCredentailsValid === true &&
-                    <p style={{ color: "green" }}>Success!</p>
+                    window.location.reload()
                 }
                 {isCredentailsValid === false &&
                     <p style={{ color: "red" }}>Email or username is invalid!</p>
