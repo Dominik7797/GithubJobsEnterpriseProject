@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace GithubJobsEnterpriseProject.Models
 {
@@ -11,7 +10,7 @@ namespace GithubJobsEnterpriseProject.Models
 
         public SQLUsersRepository(UserContext userContext)
         {
-            this._context = userContext;
+            _context = userContext;
         }
 
         public User Add(User user)
@@ -21,7 +20,6 @@ namespace GithubJobsEnterpriseProject.Models
                 _context.Users.Add(user);
                 _context.SaveChanges();
             }
-
             return user;
         }
 
@@ -34,7 +32,6 @@ namespace GithubJobsEnterpriseProject.Models
                 _context.Users.Remove(userToDelete);
                 _context.SaveChanges();
             }
-
             return userToDelete;
         }
 
@@ -54,6 +51,7 @@ namespace GithubJobsEnterpriseProject.Models
             userToUpdate.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             _context.SaveChanges();
             return updatedUser;
+
         }
     }
 }
