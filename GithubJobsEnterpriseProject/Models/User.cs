@@ -14,6 +14,13 @@ namespace GithubJobsEnterpriseProject.Models
             Email = email;
             Password = password;
         }
+        public User(int id,string username, string email, string password)
+        {
+            Id = id;
+            Username = username;
+            Email = email;
+            Password = password;
+        }
 
         [Key]
         public int Id { get; set; }
