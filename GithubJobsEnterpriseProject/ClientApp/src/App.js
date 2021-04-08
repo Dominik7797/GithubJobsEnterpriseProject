@@ -55,10 +55,12 @@ function App() {
     }
 
     const getUser = () => {
-        axios.get('/getCookieData').then(data => setUsername(data.data));
-        if (username) {
-            setIsLoggedIn(true);
-        }
+        axios.get('/getCookieData').then(data => {
+             if ((data.data).length != 0) {
+                 setIsLoggedIn(true)
+                 setUsername(data.data)
+                }
+            });
     }
     return (
     <MarkedProvider>

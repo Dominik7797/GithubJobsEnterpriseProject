@@ -5,6 +5,6 @@ namespace GithubJobsEnterpriseProject.Services
 {
     public interface ILoginService
     {
-        bool Login(string username, string password, List<User> users);
+        bool Login(string username, string password);
     }
 }

@@ -44,27 +44,32 @@ namespace GithubJobsEnterpriseProject.Controllers
         }
 
         [HttpGet("/search/description={description}&location={location}")]
-        public void GetSearchResult(string description, string location)
+        public List<GithubJob> GetSearchResult(string description, string location)
         {
             var allJobs = _githubJobsRepository.GetAllJobs();
             var searchedJobResults = new List<GithubJob>();
-
-
             foreach (var job in allJobs)
             {
                 var jobLocation = job.Location.ToLowerInvariant();
 
-                if (job.Description.Contains(description) || jobLocation == location.ToLowerInvariant())
+                if (job.Description.Contains(description) && jobLocation == location.ToLowerInvariant())
                 {
                     searchedJobResults.Add(job);
                 }
             }
+            return searchedJobResults;
         }
 
         [HttpDelete("{id}")]
         public GithubJob DeleteGithubJob(string id)
         {
             return _githubJobsRepository.DeleteJob(id);
+        }
+
+        [HttpGet("/statistics/keyword={technology}")]
+        public int GetJobByTechnology(string technology)
+        {
+            return _githubJobsRepository.GetJobByTechnology(technology);
         }
     }
 }

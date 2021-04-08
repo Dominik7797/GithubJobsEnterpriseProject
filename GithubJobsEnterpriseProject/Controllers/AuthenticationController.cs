@@ -3,11 +3,9 @@ using GithubJobsEnterpriseProject.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace GithubJobsEnterpriseProject.Controllers
 {
@@ -57,9 +55,8 @@ namespace GithubJobsEnterpriseProject.Controllers
         [HttpGet("/login/username={username}&password={password}")]
         public bool Login(string username, string password)
         {
-            var users = _userRepository.GetAllUsers().ToList();
 
-            if (_loginService.Login(username,password,users))
+            if (_loginService.Login(username, password))
             {
                 CreateCookie(username);
                 return true;
@@ -71,7 +68,7 @@ namespace GithubJobsEnterpriseProject.Controllers
         }
 
         [HttpGet("/logout")]
-        public RedirectResult Logout(string username, string password)
+        public RedirectResult Logout()
         {
             HttpContext.SignOutAsync();
             return Redirect("/");

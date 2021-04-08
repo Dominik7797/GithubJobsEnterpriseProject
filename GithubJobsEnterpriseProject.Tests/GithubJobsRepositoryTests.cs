@@ -1,43 +1,39 @@
 ﻿using GithubJobsEnterpriseProject.Models;
+using Moq;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GithubJobsEnterpriseProject.Tests
 {
     class GithubJobsRepositoryTests
     {
-        public IGithubJobsRepository githubJobsRepository = Substitute.For<IGithubJobsRepository>();
-
         [Test]
-        public void TestIfWeGetJobById()
+        public void TestIfWeGetUserById()
         {
-            var githubJob = new GithubJob("5","testCompany","testJob");
-            githubJobsRepository.GetJob("5").Returns(githubJob);
-            Assert.AreEqual(githubJob, githubJobsRepository.GetJob("5"));
-        }
+            var jobsInMemoryDatabase = new List<GithubJob>();
+            var initjob = new GithubJob("10","test","test2");
+            jobsInMemoryDatabase.Add(initjob);
 
-        [Test]
-        public void TestIfWeGetJobByWrongId()
-        {
-            var githubJob = new GithubJob("5", "testCompany", "testJob");
-            githubJobsRepository.GetJob("6").Returns(new GithubJob("6", "testCompany2", "testJob2"));
-            Assert.AreNotEqual(githubJob, githubJobsRepository.GetJob("6"));
-        }
+            var repository = new Mock<IGithubJobsRepository>();
+            repository.Setup(x => x.GetJob(It.IsAny<string>()))
+            .Returns((string i) => jobsInMemoryDatabase.Single(n => n.Id == i));
 
-        [Test]
-        public void TestIfWeGetJobCompany()
-        {
-            var githubJob = new GithubJob("5", "testCompany", "testJob");
-            githubJobsRepository.GetJob("5").Returns(githubJob);
-            Assert.AreEqual(githubJob.Company, githubJobsRepository.GetJob("5").Company);
-        }
+            var userToFind = repository.Object.GetJob("10");
 
-        [Test]
-        public void TestIfJobIsDeleted()
-        {
-            var jobToDelete = new GithubJob("5", "testCompany", "testJob");
-            githubJobsRepository.DeleteJob("5").Returns(jobToDelete);
-            Assert.AreEqual(jobToDelete, githubJobsRepository.DeleteJob("5"));
+            Assert.AreEqual(initjob, userToFind);
+            Assert.AreEqual(initjob.Company, userToFind.Company);
+            try
+            {
+                repository.Object.GetJob("100");
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+                Assert.Pass();
+            }
         }
     }
 }

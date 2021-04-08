@@ -9,48 +9,56 @@ namespace GithubJobsEnterpriseProject.Services
     {
 
         private const int _SALTSIZE = 16;
-
         private const int _HASHSIZE = 20;
-        private string _username { get; set; }
-        private string _password { get; set; }
-        private List<User> _userList { get; set; }
+        private readonly UserContext _context;
 
-        public bool Login(string username, string password, List<User> users)
+        public LoginService(UserContext userContext)
+        {
+            _context = userContext;
+        }
+
+        public bool Login(string username, string password)
         {
             string savedPasswordHash = "";
 
-            foreach (var user in _userList)
+            foreach (var user in _context.Users)
             {
-                if (user.Username == _username)
+                if (user.Username == username)
                 {
                     savedPasswordHash = user.Password;
                 }
             }
-
-            var splittedHashString = savedPasswordHash.Replace("$MYHASH$V1$", "").Split('$');
-            var iterations = int.Parse(splittedHashString[0]);
-            var base64Hash = splittedHashString[1];
-
-            // Get hash bytes
-            var hashBytes = Convert.FromBase64String(base64Hash);
-
-            // Get salt
-            var salt = new byte[_SALTSIZE];
-            Array.Copy(hashBytes, 0, salt, 0, _SALTSIZE);
-
-            // Create hash with given salt
-            var pbkdf2 = new Rfc2898DeriveBytes(_password, salt, iterations);
-            byte[] hash = pbkdf2.GetBytes(_HASHSIZE);
-
-            // Get result
-            for (var i = 0; i < _HASHSIZE; i++)
+            try
             {
-                if (hashBytes[i + _SALTSIZE] != hash[i])
+                var splittedHashString = savedPasswordHash.Replace("$MYHASH$V1$", "").Split('$');
+                var iterations = int.Parse(splittedHashString[0]);
+                var base64Hash = splittedHashString[1];
+                // Get hash bytes
+                var hashBytes = Convert.FromBase64String(base64Hash);
+
+                // Get salt
+                var salt = new byte[_SALTSIZE];
+                Array.Copy(hashBytes, 0, salt, 0, _SALTSIZE);
+
+                // Create hash with given salt
+                var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations);
+                byte[] hash = pbkdf2.GetBytes(_HASHSIZE);
+
+                // Get result
+                for (var i = 0; i < _HASHSIZE; i++)
                 {
-                    return false;
+                    if (hashBytes[i + _SALTSIZE] != hash[i])
+                    {
+                        return false;
+                    }
                 }
+                return true;
             }
-            return true;
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return false;
+            }
         }
     }
 }

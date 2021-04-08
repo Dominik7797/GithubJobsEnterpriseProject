@@ -21,37 +21,31 @@ export default function Statistics() {
         
 
     const getPythonJobs = () => {
-        axios.get('https://jobs.github.com/positions.json?description=python').then(data => setPythonJobs(data.data))
+        axios.get('/statistics/keyword=python').then(data => setPythonJobs(data.data))
     }
 
     const getJavaJobs = () => {
-        axios.get('https://jobs.github.com/positions.json?description=java').then(data => setJavaJobs(data.data))
+        axios.get('/statistics/keyword=java').then(data => setJavaJobs(data.data))
     }
 
     const getDevopsJobs = () => {
-        axios.get('https://jobs.github.com/positions.json?description=devops').then(data => setDevopsJobs(data.data))
+        axios.get('/statistics/keyword=devops').then(data => setDevopsJobs(data.data))
     }
 
     const getCsharpJobs = () => {
-        axios.get('https://jobs.github.com/positions.json?description=.net').then(data => setCsharpJobs(data.data))
+        axios.get('/statistics/keyword=.net').then(data => setCsharpJobs(data.data))
     }
 
     const getJavascriptJobs = () => {
-        axios.get('https://jobs.github.com/positions.json?description=javascript').then(data => setJavascriptJobs(data.data))
+        axios.get('/statistics/keyword=javascript').then(data => setJavascriptJobs(data.data))
     }
-
-    const NumberofPythonJobs = pythonJobs.length;
-    const NumberofJavaJobs = javaJobs.length;
-    const NumberofJavascriptJobs = javascriptJobs.length;
-    const NumberofDevopsJobs = devopsJobs.length;
-    const NumberofCsharpJobs = csharpJobs.length;
 
     const diagram = {
         dataPie: {
           labels: ["Python", "JavaScript", "Java", "DevOps", ".Net"],
           datasets: [
             {
-              data: [NumberofPythonJobs, NumberofJavascriptJobs, NumberofJavaJobs, NumberofDevopsJobs, NumberofCsharpJobs],
+                  data: [pythonJobs, javaJobs, devopsJobs, csharpJobs, javascriptJobs],
               backgroundColor: [
                 "#F7464A",
                 "#46BFBD",
