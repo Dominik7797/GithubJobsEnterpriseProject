@@ -11,7 +11,7 @@ namespace GithubJobsEnterpriseProject.Tests
     class GithubJobsRepositoryTests
     {
         [Test]
-        public void TestIfWeGetUserById()
+        public void TestIfWeGetTournamentById()
         {
             var jobsInMemoryDatabase = new List<GithubJob>();
             var initjob = new GithubJob("10","test","test2");
